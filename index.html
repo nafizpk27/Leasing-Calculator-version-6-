@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leasing Calculator</title>
+  <link rel="stylesheet" href="leasing.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"/>
+  <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="wave-bg"></div>
+    <h1>Next-Gen Tech Leasing</h1>
+    <p>Explore tailored financing options with real-time insights.</p>
+  </header>
+
+  <button id="theme-toggle" class="theme-toggle">🌙</button>
+
+  <div class="tech-finance-calculator" data-tilt data-tilt-max="10" data-tilt-speed="400">
+    <h2>Build Your Leasing Plan</h2>
+    <div class="scenario-selector">
+      <button class="scenario-btn" data-amount="10000">Startup ($10K)</button>
+      <button class="scenario-btn" data-amount="50000">Growth ($50K)</button>
+      <button class="scenario-btn" data-amount="200000">Enterprise ($200K)</button>
+    </div>
+    <div class="progress-bar">
+      <div id="progress-fill" style="width: 50%;"></div>
+    </div>
+    <form id="leasing-form">
+      <div class="input-row">
+        <label for="currency-selector">Currency</label>
+        <select id="currency-selector" aria-label="Select currency">
+          <option value="USD">USD</option>
+          <option value="AUD">AUD</option>
+        </select>
+      </div>
+      <div class="input-row">
+        <label for="invoice-amount">Total Invoice Amount (ex GST)</label>
+        <div class="input-group">
+          <input type="text" name="invoice-amount" id="invoice-amount" placeholder="Enter Amount" required aria-label="Total Invoice Amount excluding GST">
+          <button type="button" id="voice-input" class="voice-btn" aria-label="Use voice input">🎙️</button>
+        </div>
+      </div>
+      <div class="input-row slider-row">
+        <label for="invoice-slider">Adjust Amount</label>
+        <input type="range" id="invoice-slider" min="10000" max="1000000" step="1000" value="50000" aria-label="Adjust invoice amount">
+      </div>
+
+      <div class="recommendation" id="recommendation" role="region" aria-live="polite">
+        <p>Recommended Term: <span id="recommended-term">Calculating...</span></p>
+      </div>
+
+      <table class="finance-table">
+        <thead>
+          <tr>
+            <th>Monthly Payment (ex GST) <span class="tooltip" data-tooltip="Excludes Goods and Services Tax">?</span></th>
+            <th>12 months</th>
+            <th>24 months</th>
+            <th>36 months</th>
+            <th>48 months</th>
+            <th>60 months</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Calculated</td>
+            <td id="payment-12">$0.00</td>
+            <td id="payment-24">$0.00</td>
+            <td id="payment-36">$0.00</td>
+            <td id="payment-48">$0.00</td>
+            <td id="payment-60">$0.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div id="loadingSpinner" style="display: none; text-align: center;">
+        <svg class="spinner" viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" stroke="#FF3D00" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <button type="submit" id="send-message" class="btn-primary" aria-label="Consult a leasing expert">Consult Our Expert</button>
+      <button type="button" id="download-pdf" class="btn-secondary" aria-label="Download calculation summary">Download PDF</button>
+      <button id="toggle-chart" class="btn-secondary" aria-label="Toggle chart view">Show Chart</button>
+      <canvas id="payment-chart" style="display: none; margin-top: 20px;"></canvas>
+      <p id="successMessage" style="display: none; color: #00cc00; font-family: Inter; font-weight: 600; margin-top: 10px;" role="alert">
+        Form submitted successfully!
+      </p>
+    </form>
+  </div>
+
+  <div id="modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close" aria-label="Close modal">×</span>
+      <h3>Consult Our Leasing Expert</h3>
+      <form id="modal-leasing-form" action="send_email.php" method="POST">
+        <div class="input-row">
+          <label for="modal-invoice-amount">Invoice Amount (ex GST)</label>
+          <input type="text" name="modal-invoice-amount" id="modal-invoice-amount" readonly required aria-label="Invoice amount excluding GST">
+        </div>
+        <div class="input-row">
+          <label for="modal-customer-name">Customer Name</label>
+          <input type="text" name="modal-customer-name" id="modal-customer-name" required aria-label="Customer name">
+        </div>
+        <div class="input-row">
+          <label for="modal-email">Email Address</label>
+          <input type="email" name="modal-email" id="modal-email" required aria-label="Email address">
+        </div>
+        <div class="input-row">
+          <label for="modal-phone">Phone Number</label>
+          <input type="tel" name="modal-phone" id="modal-phone" required aria-label="Phone number">
+        </div>
+        <div class="input-row">
+          <label for="modal-company">Company Name</label>
+          <input type="text" name="modal-company" id="modal-company" required aria-label="Company name">
+        </div>
+        <button type="submit" id="modal-send-message" class="btn-primary" aria-label="Submit consultation form">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker registered:', reg))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const { jsPDF } = window.jspdf;
+      const invoiceInput = document.getElementById("invoice-amount");
+      const invoiceSlider = document.getElementById("invoice-slider");
+      const currencySelector = document.getElementById("currency-selector");
+      const toggleChartBtn = document.getElementById("toggle-chart");
+      const paymentChartCanvas = document.getElementById("payment-chart");
+      const voiceBtn = document.getElementById("voice-input");
+      const downloadBtn = document.getElementById("download-pdf");
+      const scenarioButtons = document.querySelectorAll(".scenario-btn");
+      const progressFill = document.getElementById("progress-fill");
+      let chartInstance = null;
+
+      function calculatePayments() {
+        let invoiceAmount = parseFloat(invoiceInput.value.replace(/[^0-9.]/g, '')) || 0;
+        let LRF = {
+          "10000-49999": { "12M": 0.09035, "24M": 0.04725, "36M": 0.03292, "48M": 0.02578, "60M": 0.02152 },
+          "50000-199999": { "12M": 0.09005, "24M": 0.04692, "36M": 0.03258, "48M": 0.02543, "60M": 0.02116 },
+          "200000-499999": { "12M": 0.08975, "24M": 0.04660, "36M": 0.03224, "48M": 0.02508, "60M": 0.02080 },
+          "500001+": { "12M": 0.08969, "24M": 0.04653, "36M": 0.03217, "48M": 0.02501, "60M": 0.02073 }
+        };
+
+        let selectedLRF;
+        if (invoiceAmount >= 10000 && invoiceAmount <= 49999) selectedLRF = LRF["10000-49999"];
+        else if (invoiceAmount >= 50000 && invoiceAmount <= 199999) selectedLRF = LRF["50000-199999"];
+        else if (invoiceAmount >= 200000 && invoiceAmount <= 499999) selectedLRF = LRF["200000-499999"];
+        else selectedLRF = LRF["500001+"];
+
+        const terms = [12, 24, 36, 48, 60];
+        terms.forEach(term => {
+          const payment = invoiceAmount * selectedLRF[`${term}M`];
+          document.getElementById(`payment-${term}`).textContent = formatCurrency(payment);
+        });
+
+        // Highlight lowest payment and recommend term
+        const payments = terms.map(term => parseFloat(document.getElementById(`payment-${term}`).textContent.replace(/[^0-9.]/g, '')));
+        const totalCosts = terms.map((term, i) => payments[i] * term);
+        const minCost = Math.min(...totalCosts);
+        const minPayment = Math.min(...payments);
+        terms.forEach(term => {
+          const cell = document.getElementById(`payment-${term}`);
+          cell.classList.remove('highlight');
+          if (parseFloat(cell.textContent.replace(/[^0-9.]/g, '')) === minPayment) {
+            cell.classList.add('highlight');
+          }
+        });
+        const recommendedTerm = terms[totalCosts.indexOf(minCost)];
+        document.getElementById("recommended-term").textContent = `${recommendedTerm} months (lowest total cost)`;
+
+        // Update progress bar
+        const maxAmount = 1000000;
+        const progress = Math.min((invoiceAmount / maxAmount) * 100, 100);
+        progressFill.style.width = `${progress}%`;
+      }
+
+      function formatCurrency(amount) {
+        const currency = currencySelector.value;
+        return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
+      }
+
+      // Initialize
+      invoiceInput.value = formatCurrency(50000);
+      invoiceSlider.value = 50000;
+      calculatePayments();
+
+      // Input events
+      invoiceInput.addEventListener("input", function () {
+        let input = this.value.replace(/[^0-9.]/g, '');
+        if (input && parseFloat(input) < 10000) {
+          this.classList.add('error');
+          this.setCustomValidity("Amount must be at least $10,000");
+        } else {
+          this.classList.remove('error');
+          this.setCustomValidity("");
+        }
+        invoiceSlider.value = input;
+        calculatePayments();
+      });
+
+      invoiceInput.addEventListener("blur", function () {
+        let floatVal = parseFloat(this.value.replace(/[^0-9.]/g, ''));
+        if (!isNaN(floatVal)) {
+          this.value = formatCurrency(floatVal);
+        }
+      });
+
+      invoiceSlider.addEventListener("input", function () {
+        invoiceInput.value = formatCurrency(this.value);
+        calculatePayments();
+      });
+
+      currencySelector.addEventListener("change", function () {
+        calculatePayments();
+        invoiceInput.value = formatCurrency(parseFloat(invoiceInput.value.replace(/[^0-9.]/g, '')) || 50000);
+      });
+
+      // Scenario buttons
+      scenarioButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+          const amount = parseFloat(this.dataset.amount);
+          invoiceInput.value = formatCurrency(amount);
+          invoiceSlider.value = amount;
+          calculatePayments();
+          scenarioButtons.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+
+      // Voice input
+      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        voiceBtn.addEventListener("click", function () {
+          recognition.start();
+          voiceBtn.classList.add('active');
+        });
+
+        recognition.onresult = function (event) {
+          const transcript = event.results[0][0].transcript.replace(/[^0-9.]/g, '');
+          if (transcript) {
+            invoiceInput.value = formatCurrency(parseFloat(transcript));
+            invoiceSlider.value = transcript;
+            calculatePayments();
+          }
+          voiceBtn.classList.remove('active');
+        };
+
+        recognition.onerror = function () {
+          alert("Voice input failed. Please try again.");
+          voiceBtn.classList.remove('active');
+        };
+      } else {
+        voiceBtn.style.display = 'none';
+      }
+
+      // PDF download
+      downloadBtn.addEventListener("click", function () {
+        const doc = new jsPDF();
+        doc.setFont("Inter", "bold");
+        doc.text("Leasing Calculation Summary", 20, 20);
+        doc.setFont("Inter", "normal");
+        doc.text(`Invoice Amount: ${invoiceInput.value}`, 20, 30);
+        doc.text("Monthly Payments:", 20, 40);
+        [12, 24, 36, 48, 60].forEach((term, i) => {
+          doc.text(`${term} months: ${document.getElementById(`payment-${term}`).textContent}`, 20, 50 + i * 10);
+        });
+        doc.text(`Recommended: ${document.getElementById("recommended-term").textContent}`, 20, 100);
+        doc.save("leasing-summary.pdf");
+      });
+
+      // Modal handling
+      document.getElementById("leasing-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const invoiceAmount = invoiceInput.value;
+        document.getElementById("modal-invoice-amount").value = invoiceAmount;
+        document.getElementById("modal").style.display = "block";
+      });
+
+      document.querySelector(".close").addEventListener("click", function () {
+        document.getElementById("modal").style.display = "none";
+      });
+
+      window.addEventListener("click", function (event) {
+        if (event.target === document.getElementById("modal")) {
+          document.getElementById("modal").style.display = "none";
+        }
+      });
+
+      // Modal form submission
+      document.getElementById("modal-leasing-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const submitButton = document.getElementById("modal-send-message");
+        const loader = document.getElementById("loadingSpinner");
+        const successMessage = document.getElementById("successMessage");
+
+        loader.style.display = "inline-block";
+        submitButton.disabled = true;
+
+        const formData = new FormData(this);
+
+        fetch("send_email.php", {
+          method: "POST",
+          body: formData
+        })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.text();
+          })
+          .then(data => {
+            console.log("Response from server:", data);
+            loader.style.display = "none";
+            submitButton.disabled = false;
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("modal-leasing-form").reset();
+            successMessage.style.display = "block";
+            setTimeout(() => successMessage.style.display = "none", 5000);
+          })
+          .catch(err => {
+            console.error("Error during form submission:", err);
+            alert("There was an error submitting the form. Please try again.");
+            loader.style.display = "none";
+            submitButton.disabled = false;
+          });
+      });
+
+      // Chart toggle
+      toggleChartBtn.addEventListener("click", function () {
+        const isChartVisible = paymentChartCanvas.style.display === "block";
+        paymentChartCanvas.style.display = isChartVisible ? "none" : "block";
+        document.querySelector(".finance-table").style.display = isChartVisible ? "table" : "none";
+        this.textContent = isChartVisible ? "Show Chart" : "Show Table";
+
+        if (!isChartVisible) {
+          const payments = [12, 24, 36, 48, 60].map(term =>
+            parseFloat(document.getElementById(`payment-${term}`).textContent.replace(/[^0-9.]/g, ''))
+          );
+          if (chartInstance) chartInstance.destroy();
+          chartInstance = new Chart(paymentChartCanvas, {
+            type: 'bar',
+            data: {
+              labels: ['12 months', '24 months', '36 months', '48 months', '60 months'],
+              datasets: [{
+                label: 'Monthly Payment (ex GST)',
+                data: payments,
+                backgroundColor: '#FF3D00',
+                borderColor: '#0A1D56',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: { beginAtZero: true }
+              }
+            }
+          });
+        }
+      });
+
+      // Dark mode toggle
+      document.getElementById("theme-toggle").addEventListener("click", function () {
+        document.body.classList.toggle("dark-mode");
+        this.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+      });
+    });
+  </script>
+</body>
+</html>

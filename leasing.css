@@ -1,0 +1,609 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #FFF7ED;
+    opacity: 0;
+    animation: fadeInPage 1s ease forwards;
+    font-family: 'Inter', sans-serif;
+    color: #0A1D56;
+}
+
+.hero {
+    position: relative;
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #FF3D00 0%, #FF6F61 100%);
+    color: #fff;
+    border-radius: 0 0 20px 20px;
+    margin: 0 auto;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.hero .wave-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,138.7C672,128,768,160,864,176C960,192,1056,192,1152,181.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-size: cover;
+    animation: wave 10s infinite linear;
+    z-index: 0;
+}
+
+.hero h1 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 3rem;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.hero p {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.3rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #0A1D56;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: rotate(360deg);
+}
+
+.tech-finance-calculator {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.tech-finance-calculator h2 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: #0A1D56;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.scenario-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.scenario-btn {
+    background: #FF6F61;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.scenario-btn.active,
+.scenario-btn:hover {
+    background: #0A1D56;
+    transform: scale(1.1);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #FFEDE8;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+#progress-fill {
+    height: 100%;
+    background: #FF3D00;
+    transition: width 0.5s ease;
+}
+
+.input-row {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 15px;
+}
+
+.input-row label {
+    width: 40%;
+    padding: 12px;
+    background: #FF3D00;
+    color: #fff;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    border-radius: 10px 0 0 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
+.input-row .input-group {
+    display: flex;
+    width: 60%;
+}
+
+.input-row input,
+.input-row select {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #FF3D00;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 0 10px 10px 0;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    color: #0A1D56;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-row input:focus,
+.input-row select:focus {
+    border-color: #0A1D56;
+    box-shadow: 0 0 12px rgba(10, 29, 86, 0.3);
+    outline: 3px solid #0A1D56;
+    outline-offset: 2px;
+}
+
+.input-row input.error {
+    animation: shake 0.3s ease;
+    border-color: #FF0000;
+}
+
+.voice-btn {
+    padding: 12px;
+    background: #0A1D56;
+    color: #fff;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background 0.3s ease;
+}
+
+.voice-btn.active,
+.voice-btn:hover {
+    background: #FF3D00;
+}
+
+.slider-row input[type="range"] {
+    width: 60%;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #FF3D00;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider-row input[type="range"]::-webkit-slider-runnable-track {
+    height: 10px;
+    background: #FFEDE8;
+    border-radius: 5px;
+}
+
+.recommendation {
+    background: rgba(0, 204, 0, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #0A1D56;
+}
+
+.finance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.finance-table th,
+.finance-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #FF3D00;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.95);
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.finance-table th {
+    background: #0A1D56;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.finance-table td:hover {
+    transform: translateY(-3px);
+    background: #FFF7ED;
+}
+
+.finance-table td:first-child {
+    background: #FF6F61;
+    color: #fff;
+}
+
+.finance-table tbody tr {
+    transition: background 0.3s ease;
+}
+
+.finance-table tbody tr:hover {
+    background: rgba(255, 61, 0, 0.05);
+}
+
+.highlight {
+    background: rgba(0, 204, 0, 0.2) !important;
+    transition: background 0.3s ease;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    color: #FF3D00;
+    font-weight: bold;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0A1D56;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-primary {
+    background: #FF3D00;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    margin: 20px 10px 20px 0;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    background: #0A1D56;
+    box-shadow: 0 6px 20px rgba(10, 29, 86, 0.5);
+}
+
+.btn-primary:active {
+    transform: scale(0.95);
+}
+
+.btn-primary:focus {
+    outline: 3px solid #0A1D56;
+    outline-offset: 2px;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #FF3D00;
+    padding: 12px 24px;
+    border: 2px solid #FF3D00;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin: 20px 10px;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #FF3D00;
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+.btn-secondary:focus {
+    outline: 3px solid #0A1D56;
+    outline-offset: 2px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+.spinner circle {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+    animation: dash 1.5s ease-in-out infinite;
+}
+
+#loadingSpinner {
+    display: none;
+    margin: 20px auto;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease;
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease;
+}
+
+.close {
+    color: #0A1D56;
+    float: right;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #FF3D00;
+}
+
+#payment-chart {
+    max-width: 100%;
+    height: 300px;
+}
+
+#successMessage {
+    animation: fadeInOut 5s ease-in-out;
+}
+
+.dark-mode {
+    background: #0A1D56;
+    color: #fff;
+}
+
+.dark-mode .hero {
+    background: linear-gradient(135deg, #1A3A8A 0%, #2B5CB8 100%);
+}
+
+.dark-mode .tech-finance-calculator {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .input-row label {
+    background: #1A3A8A;
+}
+
+.dark-mode .input-row input,
+.dark-mode .input-row select {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #1A3A8A;
+}
+
+.dark-mode .finance-table {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .finance-table th {
+    background: #1A3A8A;
+}
+
+.dark-mode .finance-table td {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #1A3A8A;
+}
+
+.dark-mode .finance-table td:first-child {
+    background: #2B5CB8;
+}
+
+.dark-mode .btn-primary {
+    background: #FF3D00;
+}
+
+.dark-mode .btn-secondary {
+    color: #FF3D00;
+    border-color: #FF3D00;
+}
+
+.dark-mode .modal-content {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.dark-mode .recommendation {
+    background: rgba(0, 204, 0, 0.05);
+}
+
+.dark-mode .scenario-btn {
+    background: #2B5CB8;
+}
+
+.dark-mode .scenario-btn.active,
+.dark-mode .scenario-btn:hover {
+    background: #FF3D00;
+}
+
+.dark-mode .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media only screen and (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .tech-finance-calculator {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .input-row {
+        flex-direction: column;
+    }
+
+    .input-row label,
+    .input-row .input-group,
+    .input-row input,
+    .input-row select {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    .input-row .input-group {
+        flex-direction: row;
+    }
+
+    .voice-btn {
+        border-radius: 0 10px 10px 0;
+    }
+
+    .scenario-selector {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .finance-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 14px 28px;
+        font-size: 1.1rem;
+        display: block;
+        margin: 10px auto;
+    }
+}
+
+@keyframes wave {
+    0% { background-position-x: 0; }
+    100% { background-position-x: 1440px; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes dash {
+    0% { stroke-dashoffset: -35; }
+    50% { stroke-dashoffset: -124; }
+    100% { stroke-dashoffset: -35; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+@keyframes fadeInPage {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
